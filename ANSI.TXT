@@ -1,0 +1,23 @@
+Sample text file to 
+testing the editor
+____________________
+ANSI X3.4-1986
+
+!"#$%&'()*+,-./ 
+0123456789:;<=>? @
+ABCDEFGHIJKLMNO 
+PQRSTUVWXYZ[\]^_ `
+abcdefghijklmno 
+pqrstuvwxyz {|}~
+____________________
+
+decimal values:  
+126 = ~   123 = {  125 = }
+ 96 = `    92 = \    9 = Tab
+
+Sample texts:
+https://www.github.com
+noreply@postbox.lw
+C:\program files\clock\12h.sys
+join_paths(src_dir, 'main.c');
+
