@@ -1,8 +1,8 @@
 # C64 ASCII Text Editor 
 A text editor capable of loading, editing, and saving ASCII text.  
   
-![texteditor screen 1](assets/screenshot-00.png?raw=true)
-![texteditor screen 2](assets/screenshot-04.png?raw=true)  
+<img src="assets/screenshot-00.png" alt="texteditor screen 1" width="400">
+<img src="assets/screenshot-02.png" alt="texteditor screen 2" width="400">  
 
 You can open and edit text files that you’ve transferred to the C64 from Windows or Linux. After editing them on the C64, you can process the text file on your PC again—it remains compatible.  
 The editor supports the 7-bit ASCII character set (ANSI X3.4-1986), with the exception of the NUL and CR characters, which are deliberately ignored when loading a file.  
