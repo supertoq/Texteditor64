@@ -49,7 +49,7 @@ pqrstuvwxyz {|}~
         Left-arrow key      = Underscore _ (also SHIFT+Pound key)  
         SHIFT+| (key before RESTORE) = ^  
         SHIFT+: = [      SHIFT+; = ]  
-        | = ASCII pipe character |  
+        | (arrow) = ASCII pipe character (|)  
   
 Start the program from disk using LOAD"TEXTEDITOR",8 and RUN.
   
@@ -62,7 +62,7 @@ PETSCII-Codes
 ```  
 https://www.c64-wiki.de/wiki/PETSCII  
 ```  
-### ANSI X3.4
+ANSI X3.4
 ```  
 https://en.wikipedia.org/wiki/ASCII  
 ```  
