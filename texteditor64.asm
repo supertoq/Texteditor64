@@ -1,12 +1,12 @@
 ; =====================================================================
-;  Kleiner ASCII-Texteditor fuer den C64 
+;  ASCII-Texteditor fuer den C64 
 ;  Copyright (c) 2026 supertoq
-;  Version 1.0_ 
+;  Version 1.0 _
 ;  
-;  Unterstuetzt den 7-Bit-ASCII-Zeichensatz (ANSI X3.4-1986), ausgenommen sind
-;  NUL und CR, diese werden beim Laden der Datei ignoriert.
-;  Diese Anwendung hat die Aufgabe geladenen ASCII Code in Bildschirmcodes 
-;  darzustellen, sowie die Tastaturcodes beim schreiben in ASCII umzuwandeln.
+;  Ein Texteditor der in der Lage ist ASCII Code zu laden, zu editiren und zu speichern.
+;  Unterstuetzt wird der 7-Bit-ASCII-Zeichensatz (ANSI X3.4-1986),
+;  ausgenommen der Zeichen NUL und CR, diese werden beim Laden einer Datei bewusst ignoriert.
+:  Sonderzeichen werden für die Darstellung auf dem C64 in passende Bildschirmcodes umgewandelt.
 ;
 ;  - Dateien werden als C64 SEQ-Dateien mit reinem ASCII gespeichert 
 ;    (in Windows muss die Dateiendung in .txt umbenannt werden)
@@ -24,13 +24,13 @@
 ;
 ;    F1  Speichern   F3  Laden   F5  Neu   F7  Beenden
 ;
-;    F8  beliebigen ASCII-Code einfuegen (Dezimal 1-127 und erweitert bis 255)
-;    Beispiele:
-;     126 = ~   123 = {   125 = }   96 = ` 92 = \ 
-;     9 = Tab   12 = Seitenumbruch(PC: CTRL+L)  27 = ESC   127 = DEL
+;    F8  ermoeglicht beliebigen ASCII-Code einzufuegen (Dezimalwerte 1-127, + erweitert bis 255)
+;    Beispiele für Dezimalwerte:
+;     126 = ~   123 = {   125 = }   96 = `   92 = \ 
+;     9 = Tab   12 = Seitenumbruch(PC: CTRL+L)   27 = ESC   127 = DEL
 ;
 ;  Alternative Zeichendarstellung:
-;        { } = dargestellt als invertierte Klammern()
+;        { } = dargestellt als invertierte Klammern ()
 ;         ~  = dargestellt als invertiertes Minus -
 ;
 ;  Direkteingabe auf der C64-Tastatur: 
@@ -38,12 +38,9 @@
 ;        Linkspfeil-Taste   =  Unterstrich _  (ebenso SHIFT+Pfund-Taste)
 ;        SHIFT+| (Taste vor RESTORE) =  ^   
 ;        SHIFT+:  =  [      SHIFT+;  =  ]
-;        | = ASCII Pipe (|)
+;        | = ASCII Pipe |
 ;
-;
-;
-;  Assemblieren:   64tass -C texteditor64.asm -o TEXTEDITOR.PRG
-;  Starten:        von Diskette per LOAD"TEXTEDITOR",8 und RUN
+;  Starten von Diskette per LOAD"TEXTEDITOR",8 und RUN
 ;
 ; =====================================================================
 
@@ -86,7 +83,7 @@ READST  = $ffb7
 CLALL   = $ffe7
 
 ; ---------------------------------------------------------------------
-;  Erklaerung der Namen im Programm
+;  Erklaerung der Bezeichnungen im Code
 ;
 ;  Register (Rechenspeicher des Prozessors):
 ;    A      Hauptregister, hier stehen meist Zeichen und Werte
