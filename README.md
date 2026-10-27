@@ -51,13 +51,13 @@ pqrstuvwxyz {|}~
         SHIFT+: = [      SHIFT+; = ]  
         | (arrow) = ASCII pipe character (|)  
   
-Start the program from disk using LOAD"TEXTEDITOR",8 and RUN.
+Start the program from disk using LOAD"TEXTEDITOR",8,1 and RUN.
   
      
 ### $\color{#8B0000}{\textbf{AI alert:}}$  
 - The code was created with the assistance of Claude.  
    
-### Useful Information:
+### Useful Information
 PETSCII-Codes
 ```  
 https://www.c64-wiki.de/wiki/PETSCII  
