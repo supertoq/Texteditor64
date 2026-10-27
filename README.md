@@ -52,7 +52,7 @@ pqrstuvwxyz {|}~
   
 Start the program from disk using LOAD"TEXTEDITOR",8 and RUN.
   
-## $\color{#8B0000}{\text{AI alert:}}$  
+### $\color{#8B0000}{\text{AI alert:}}$  
 The code was created with the assistance of Claude.  
    
 ### Useful Information:
