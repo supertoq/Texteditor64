@@ -52,8 +52,10 @@ pqrstuvwxyz {|}~
   
 Start the program from disk using LOAD"TEXTEDITOR",8 and RUN.
   
+     
 ### $\color{#8B0000}{\textbf{AI alert:}}$  
-The code was created with the assistance of Claude.  
+  
+- The code was created with the assistance of Claude.  
    
 ### Useful Information:
 PETSCII-Codes
