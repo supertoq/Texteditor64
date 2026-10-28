@@ -1,9 +1,11 @@
+<img src="assets/6502_0.svg" height="64">
+
 # C64 ASCII Text Editor 
 A text editor capable of loading, editing, and saving ASCII text.  
   
 <p>
 <img src="assets/screenshot-00.png" alt="texteditor screen 1" width="400">
-<img src="assets/screenshot-02.png" alt="texteditor screen 2" width="400">  
+<img src="assets/screenshot-04.png" alt="texteditor screen 2" width="400">  
 </p>  
 
 You can open and edit text files that you’ve transferred to the C64 from Windows or Linux. After editing them on the C64, you can process the text file on your PC again—it remains compatible.  

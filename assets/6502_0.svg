@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <g>
+    <title>Layer 1</title>
+    <rect rx="25" id="svg_1" height="199" width="661.99998" y="194.60001" x="70.60003" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_2" height="0" width="50" y="296.60001" x="445.60001" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_9" height="111.30424" width="19.99998" y="73.0595" x="105.37431" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_10" height="111.30424" width="19.99998" y="73.0595" x="150.59166" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_11" height="111.30424" width="19.99998" y="72.18993" x="194.93944" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_12" height="111.30424" width="19.99998" y="73.0595" x="237.54809" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_13" height="111.30424" width="19.99998" y="73.0595" x="282.76544" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_14" height="111.30424" width="19.99998" y="72.18993" x="327.11322" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_15" height="111.30424" width="19.99998" y="72.69527" x="370.08611" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_16" height="111.30424" width="19.99998" y="72.69527" x="415.30346" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_17" height="111.30424" width="19.99998" y="72.69527" x="459.65124" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_18" height="111.30424" width="19.99998" y="72.69527" x="502.25988" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_19" height="111.30424" width="19.99998" y="72.69527" x="545.7381" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_20" height="111.30424" width="19.99998" y="72.69527" x="589.21631" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_21" height="111.30424" width="19.99998" y="72.69527" x="632.69453" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_22" height="111.30424" width="19.99998" y="72.69527" x="676.17275" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_24" height="111.30424" width="19.99998" y="405.23303" x="105.37431" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_25" height="111.30424" width="19.99998" y="405.23303" x="150.59166" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_26" height="111.30424" width="19.99998" y="404.36347" x="194.93944" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_27" height="111.30424" width="19.99998" y="405.23303" x="237.54809" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_28" height="111.30424" width="19.99998" y="405.23303" x="282.76544" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_29" height="111.30424" width="19.99998" y="404.36347" x="327.11322" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_30" height="111.30424" width="19.99998" y="404.86881" x="370.08611" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_31" height="111.30424" width="19.99998" y="404.86881" x="415.30346" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_32" height="111.30424" width="19.99998" y="404.86881" x="459.65124" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_33" height="111.30424" width="19.99998" y="404.86881" x="502.25988" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_34" height="111.30424" width="19.99998" y="404.86881" x="545.7381" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_35" height="111.30424" width="19.99998" y="404.86881" x="589.21631" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_36" height="111.30424" width="19.99998" y="404.86881" x="632.69453" stroke="#000" fill="#ffffff"/>
+    <rect id="svg_37" height="111.30424" width="19.99998" y="404.86881" x="676.17275" stroke="#000" fill="#ffffff"/>
+    <text transform="matrix(5.173701, 0, 0, 3.94703, -738.67213, -890.220594)" id="svg_38" style="font-family: &quot;Liberation Sans&quot;; font-size: 28px; stroke: rgb(0, 0, 0); stroke-width: 0px; white-space: pre;" x="189.418" y="300.765">6502</text>
+    <text style="fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 42px; white-space: pre;" x="242.216" y="334.443" transform="matrix(1.869184, 0, 0, 1.700762, -205.530383, -207.813083)">CODING</text>
+    <ellipse style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255);" cx="160.651" cy="294.568" rx="24.196" ry="23.922"/>
+    <ellipse style="stroke: rgb(0, 0, 0); fill: rgb(255, 255, 255); stroke-width: 1; transform-box: fill-box; transform-origin: 50.9372% 50.7365%;" cx="639.558" cy="293.523" rx="24.196" ry="23.922"/>
+  </g>
+</svg>
