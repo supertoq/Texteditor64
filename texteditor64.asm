@@ -1,12 +1,12 @@
 ; =====================================================================
 ;  ASCII-Texteditor fuer den C64 
 ;  Copyright (c) 2026 supertoq
-;  Version 1.0 _
+;  Version 1.0_a
 ;  
-;  Ein Texteditor der in der Lage ist ASCII Code zu laden, zu editiren und zu speichern.
+;  Ein Texteditor der in der Lage ist ASCII Code zu laden, zu editieren und zu speichern.
 ;  Unterstuetzt wird der 7-Bit-ASCII-Zeichensatz (ANSI X3.4-1986),
 ;  ausgenommen der Zeichen NUL und CR, diese werden beim Laden einer Datei bewusst ignoriert.
-:  Sonderzeichen werden für die Darstellung auf dem C64 in passende Bildschirmcodes umgewandelt.
+;  Sonderzeichen werden fuer die Darstellung auf dem C64 in passende Bildschirmcodes umgewandelt.
 ;
 ;  - Dateien werden als C64 SEQ-Dateien mit reinem ASCII gespeichert 
 ;    (in Windows muss die Dateiendung in .txt umbenannt werden)
@@ -17,30 +17,33 @@
 ;  - nicht verfuegbare Tasteneingaben koennen per F8 haendisch eingetragen werden
 ;
 ;  Tastenverwendung:
-;    Cursor        bewegen          HOME      Zeilenanfang
-;    DEL           Backspace        CLR       Textanfang
-;    SHIFT+DEL     Entf (INST)      F2        Textende
-;    RETURN        neue Zeile       F4 / F6   Seite hoch / runter
+;    F1 = Speichern  F3 = Laden  F5 = Neu  F7 = Beenden  F8 = ASCII Code Eingabe
 ;
-;    F1  Speichern   F3  Laden   F5  Neu   F7  Beenden
+;    Cursor keys =  Navigation       HOME    =  Zeilenanfang
+;    DEL         =  Backspace        CLR     =  Textanfang
+;    SHIFT+DEL   =  Entf (INST)      F2      =  Textende
+;    RETURN      =  neue Zeile       F4 / F6 =  Seite hoch / runter
+;    CTRL+I      =  Tabulator
 ;
-;    F8  ermoeglicht beliebigen ASCII-Code einzufuegen (Dezimalwerte 1-127, + erweitert bis 255)
-;    Beispiele für Dezimalwerte:
-;     126 = ~   123 = {   125 = }   96 = `   92 = \ 
-;     9 = Tab   12 = Seitenumbruch(PC: CTRL+L)   27 = ESC   127 = DEL
+;  Zeichen-Direkteingabe auf der C64-Tastatur: 
+;        Pfund-Taste                 =  Backslash \
+;        Linkspfeil-Taste            =  Unterstrich _  (ebenso SHIFT+Pfund)
+;        | (Taste vor RESTORE)       =  ASCII Pipe | 
+;        SHIFT+| (Taste vor RESTORE) =  ^   
+;        SHIFT+:  =  [      SHIFT+;  =  ]
+;
+;    F8  =  ASCII-Code Eingabe (Dezimalwerte 1-127, + erweitert bis 255)
+;    
+;        Beispiele für Dezimalwerte:
+;        126 = ~   123 = {   125 = }   96 = `   92 = \ 
+;        9 = Tab   12 = Seitenumbruch(PC: CTRL+L)   27 = ESC   127 = DEL
 ;
 ;  Alternative Zeichendarstellung:
 ;        { } = dargestellt als invertierte Klammern ()
 ;         ~  = dargestellt als invertiertes Minus -
 ;
-;  Direkteingabe auf der C64-Tastatur: 
-;        Pfund-Taste        =  Backslash \
-;        Linkspfeil-Taste   =  Unterstrich _  (ebenso SHIFT+Pfund-Taste)
-;        SHIFT+| (Taste vor RESTORE) =  ^   
-;        SHIFT+:  =  [      SHIFT+;  =  ]
-;        | = ASCII Pipe |
 ;
-;  Starten von Diskette per LOAD"TEXTEDITOR",8 und RUN
+;  Editor starten - von Diskette per LOAD"TEXTEDITOR",8 und RUN
 ;
 ; =====================================================================
 
@@ -63,6 +66,8 @@ INFO    = SCREEN+24*40          ; Infozeile (freier Speicher)
 WARN    = 1000                  ; darunter wird die Anzeige rot
 WARNCOL = 10                    ; Warnfarbe (hellrot)
 LF      = $0a
+TAB     = $09                   ; Tabulator-Zeichen (Code 9)
+TABW    = 4                     ; Breite des Tabulators am Bildschirm
 TEXTCOL = 15                    ; Textfarbe (hellgrau)
 BGCOL   = 6                     ; Hintergrund (dunkelblau)
 CHARRAM = $3000                 ; Zeichensatz im RAM (2 KB)
@@ -83,7 +88,7 @@ READST  = $ffb7
 CLALL   = $ffe7
 
 ; ---------------------------------------------------------------------
-;  Erklaerung der Bezeichnungen im Code
+;  Erklaerung der Namen im Programm
 ;
 ;  Register (Rechenspeicher des Prozessors):
 ;    A      Hauptregister, hier stehen meist Zeichen und Werte
@@ -91,17 +96,16 @@ CLALL   = $ffe7
 ;    Carry  Merker im Prozessor, wird hier fuer Ja/Nein benutzt
 ;
 ;  Variablen:
-;    cur      Cursorposition (Adresse im Textspeicher)
-;    tend     Textende (Adresse hinter dem letzten Zeichen)
-;    top      ist die Adresse im Textspeicher des Zeichens, das 
-;             oben links auf dem Bildschirm erscheint
-;    p, q, r  sind Zeiger auf Textstellen (Hilfsvariablen)
-;    tmp, tmp2, tmp3  sind ebenfalls Hilfsvariablen
-;    sc       Zeiger auf eine Stelle im Bildschirmspeicher
-;    sz       Anzahl Bytes, die beim Verschieben von Text betroffen sind
-;    crow     Zeile des Cursors am Bildschirm
-;    ccol     Spalte des Cursors am Bildschirm
-;    LF       Zeilenvorschub, das Zeilenende-Zeichen (Code 10)
+;    cur    Cursorposition (Adresse im Textspeicher)
+;    tend   Textende (Adresse hinter dem letzten Zeichen)
+;    top    erste Textstelle, die oben am Bildschirm steht
+;    p, q, r  Zeiger auf Textstellen (Hilfsvariablen)
+;    sc     Zeiger auf eine Stelle im Bildschirmspeicher
+;    sz     Anzahl Bytes, die beim Verschieben von Text betroffen sind
+;    crow   Zeile des Cursors am Bildschirm
+;    ccol   Spalte des Cursors am Bildschirm
+;    tmp, tmp2, tmp3  Hilfsvariablen
+;    LF     Zeilenvorschub, das Zeilenende-Zeichen (Code 10)
 ; ---------------------------------------------------------------------
 
 ; ---- Zeropage
@@ -274,7 +278,9 @@ hand    .word k_ret-1,k_ret-1,k_down-1,k_up-1,k_right-1,k_left-1
 ; Der Tastencode kommt im Register A an,
 ; das Ergebnis steht danach wieder in A.
 ; Ergebnis 0: Taste ohne Zeichen, wird ignoriert
-p2a     cmp #$20
+p2a     cmp #TAB
+        beq p2a_ok              ; CTRL+I = Tabulator
+        cmp #$20
         bcc p2a_no
         cmp #$41
         bcc p2a_ok              ; $20-$40 unveraendert
@@ -560,32 +566,17 @@ k_pgup  lda #20
         rts
 
 k_down  jsr rowstart
-        lda cur                 ; Spalte des Cursors merken (tmp)
-        sec
-        sbc p
-        sta tmp
+        jsr calccol             ; ccol = Spalte des Cursors
+        lda ccol
+        sta tmp                 ; gewuenschte Spalte merken (tmp)
         jsr nextrow
         bcs kd_rt               ; letzte Zeile
-        ldx #0
-kd_adv  lda tmp
-        beq kd_set
-        lda (p,x)
-        beq kd_set
-        cmp #LF
-        beq kd_set
-        #inc16 p
-        dec tmp
-        jmp kd_adv
-kd_set  lda p
-        sta cur
-        lda p+1
-        sta cur+1
+        jmp movecol
 kd_rt   rts
 
 k_up    jsr rowstart
-        lda cur
-        sec
-        sbc p
+        jsr calccol
+        lda ccol
         sta tmp
         lda p+1
         cmp #>BUF
@@ -594,20 +585,66 @@ k_up    jsr rowstart
         cmp #<BUF
         beq ku_rt               ; schon in der ersten Zeile
 +       jsr prevrow
-        ldx #0
-ku_adv  lda tmp
-        beq ku_set
-        lda (p,x)
+        jmp movecol
+ku_rt   rts
+
+; Cursor in der Zeile ab p auf die Spalte tmp setzen
+; (oder davor, wenn die Zeile kuerzer ist)
+; Ein Tabulator wird nicht in der Mitte getroffen
+movecol ldx #0
+        ldy #0                  ; Y = bisherige Spalte
+mc_lp   lda (p,x)
+        beq mc_dn
         cmp #LF
-        beq ku_set
+        beq mc_dn
+        cmp #TAB
+        beq mc_tab
+        tya
+        clc
+        adc #1                  ; normales Zeichen: 1 Spalte
+        jmp mc_chk
+mc_tab  tya
+        clc
+        adc #TABW               ; Tabulator: TABW Spalten
+mc_chk  cmp tmp
+        beq mc_adv
+        bcs mc_dn               ; ueber der gewuenschten Spalte: stop
+mc_adv  tay
         #inc16 p
-        dec tmp
-        jmp ku_adv
-ku_set  lda p
+        jmp mc_lp
+mc_dn   lda p
         sta cur
         lda p+1
         sta cur+1
-ku_rt   rts
+        rts
+
+; Spalte des Cursors am Bildschirm berechnen
+; r = Anfang der Zeile, Ergebnis in ccol
+calccol lda r
+        sta q
+        lda r+1
+        sta q+1
+        ldx #0
+        ldy #0                  ; Y = Spalte
+cc_lp   lda q
+        cmp cur
+        bne cc_c
+        lda q+1
+        cmp cur+1
+        beq cc_dn               ; Cursor erreicht
+cc_c    lda (q,x)
+        #inc16 q
+        cmp #TAB
+        bne cc_1
+        tya
+        clc
+        adc #TABW               ; Tabulator: TABW Spalten
+        tay
+        jmp cc_lp
+cc_1    iny
+        jmp cc_lp
+cc_dn   sty ccol
+        rts
 
 ; ---------------------------------------------------------------------
 ;  Zeilenlogik. Eine Bildschirmzeile endet nach LF oder nach 40 Zeichen.
@@ -615,17 +652,25 @@ ku_rt   rts
 ; Naechste Bildschirmzeile suchen
 ; p zeigt vorher auf den Anfang einer Zeile
 ; und danach auf den Anfang der naechsten Zeile
+; Ein Tabulator zaehlt TABW Spalten
 ; Carry gesetzt: Textende erreicht (letzte Zeile)
 nextrow ldx #0
-        ldy #0
+        ldy #0                  ; Y = Spalte in der Zeile
 nr1     lda (p,x)
         beq nr_eof
         #inc16 p
         cmp #LF
         beq nr_t
-        iny
-        cpy #40
-        bne nr1
+        cmp #TAB
+        bne nr_c
+        tya                     ; Tabulator: TABW Spalten weiter
+        clc
+        adc #TABW
+        tay
+        jmp nr_chk
+nr_c    iny                     ; normales Zeichen: 1 Spalte weiter
+nr_chk  cpy #40
+        bcc nr1                 ; Zeile noch nicht voll
 nr_t    clc
         rts
 nr_eof  sec
@@ -763,11 +808,7 @@ fc_set  lda p
         sta top+1
         jmp fc_again
 fc_found
-        lda cur
-        sec
-        sbc r
-        sta ccol
-        rts
+        jmp calccol             ; Spalte des Cursors berechnen
 
 draw    lda top
         sta p
@@ -787,12 +828,24 @@ dr_ch   lda (p,x)
         #inc16 p
         cmp #LF
         beq dr_fill
+        cmp #TAB
+        beq dr_tab
         jsr a2s
         sta (sc),y
         iny
         cpy #40
         bne dr_ch
         beq dr_next
+dr_tab  lda #TABW               ; Tabulator als Leerzeichen zeigen
+        sta tcnt
+        lda #$20
+dt_lp   sta (sc),y
+        iny
+        cpy #40
+        bcs dr_next             ; Zeile voll
+        dec tcnt
+        bne dt_lp
+        jmp dr_ch
 dr_fill lda #$20
 -       cpy #40
         bcs dr_next
@@ -892,7 +945,7 @@ pwlo    .byte <10000, <1000, <100, <10, <1
 pwhi    .byte >10000, >1000, >100, >10, >1
 
 ; ---------------------------------------------------------------------
-;  Obere Statuszeile (invertiert)
+;  Statuszeile (invertiert)
 ; ---------------------------------------------------------------------
 stclear ldx #39
         lda #$a0
@@ -936,7 +989,7 @@ cf_y    sec
         rts
 
 ; ---------------------------------------------------------------------
-;  Neu / Beenden / ASCII-Code
+;  Neu / Ende / ASCII-Code
 ; ---------------------------------------------------------------------
 k_new   jsr stclear
         #msg m_new
@@ -1180,7 +1233,7 @@ k_save  jsr getname
         jsr CLRCHN
         lda #0
         jsr SETNAM
-        jsr open15              ; Kommandokanal erneut oeffnen
+        jsr open15              ; Kommandokanal frisch oeffnen
         bcc +
         jmp dev_err
 +       lda #2
@@ -1311,6 +1364,7 @@ tmp3    .byte 0
 digit   .byte 0
 chr     .byte 0
 toobig  .byte 0
+tcnt    .byte 0
 flen    .byte 0
 freel   .byte 0
 freeh   .byte 0
