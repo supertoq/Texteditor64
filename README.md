@@ -1,4 +1,4 @@
-<img src="assets/6502_0.svg" height="64">
+<img src="assets/6502_0.svg" height="96">
 
 # C64 ASCII Text Editor 
 A text editor capable of loading, editing, and saving ASCII text.  
@@ -35,30 +35,33 @@ pqrstuvwxyz {|}~
 ```  
   
 ### Keyboard controls:
-    Cursor keys    Move cursor       HOME      Start of line  
-    DEL            Backspace         CLR       Start of text  
-    SHIFT+DEL      Delete (INST)     F2        End of text  
-    RETURN         New line          F4 / F6   Page up / down  
-  
     F1  Save   F3  Load   F5  New   F7  Quit  
+      
+    Cursor keys  =  Move cursor       HOME    =   Start of line  
+    DEL          =  Backspace         CLR     =   Start of text  
+    SHIFT+DEL    =  Delete (INST)     F2      =   End of text  
+    RETURN       =  New line          F4 / F6 =  Page up / down  
+    CTRL+I       =  Tabulator
+  
+    Direct character input on the C64 keyboard:  
+        Pound key                    = Backslash \  
+        Left-arrow key               = Underscore _  (also SHIFT+Pound)  
+        | (key before RESTORE)       = ASCII pipe character (|)         
+        SHIFT+| (key before RESTORE) = ^  
+        SHIFT+: = [          SHIFT+; = ]  
+ 
   
     F8  Allows any ASCII code to be inserted (decimal values 1–127, extended up to 255)  
-    Examples of decimal values:  
-     126 = ~   123 = {   125 = }   96 = `   92 = \  
-      9 = Tab   12 = Form feed (PC: CTRL+L)   27 = ESC   127 = DEL  
+  
+        Examples of decimal values:  
+        126 = ~   123 = {   125 = }   96 = `   92 = \  
+        9 = Tab   12 = Form feed (PC: CTRL+L)   27 = ESC   127 = DEL  
   
     Alternative character representation:  
         { } = displayed as inverted parentheses ()  
          ~  = displayed as an inverted minus sign -  
-
-    Direct character input on the C64 keyboard:  
-        Pound key           = Backslash  
-        Left-arrow key      = Underscore _ (also SHIFT+Pound key)  
-        SHIFT+| (key before RESTORE) = ^  
-        SHIFT+: = [      SHIFT+; = ]  
-        | (arrow) = ASCII pipe character (|)  
   
-Start the program from disk using LOAD"TEXTEDITOR",8,1 and RUN.
+Start the program from floppy disk using LOAD"TEXTEDITOR",8,1 and RUN.
   
      
 ### $\color{#8B0000}{\textbf{AI alert:}}$  
