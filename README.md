@@ -46,11 +46,10 @@ pqrstuvwxyz {|}~
     Direct character input on the C64 keyboard:  
         Pound key                    = Backslash \  
         Left-arrow key               = Underscore _  (also SHIFT+Pound)  
-        | (key before RESTORE)       = ASCII pipe character (|)         
+        | (key before RESTORE)       = ASCII character pipe (|)         
         SHIFT+| (key before RESTORE) = ^  
         SHIFT+: = [          SHIFT+; = ]  
  
-  
     F8  Allows any ASCII code to be inserted (decimal values 1–127, extended up to 255)  
   
         Examples of decimal values:  
