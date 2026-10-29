@@ -72,7 +72,7 @@ pqrstuvwxyz {|}~
 Start the program from floppy disk using `LOAD"TEXTEDITOR",8,1` and `RUN`.
   
      
-### <span style="color:#8B0000">**AI alert:**</span> 
+### $\color{#8B0000}{\mathsf{\textbf{AI alert:}}}$
 - The code was created with the assistance of Claude.  
    
 ### Useful Information
