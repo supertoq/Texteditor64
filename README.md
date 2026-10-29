@@ -18,11 +18,11 @@ Special characters are converted to suitable C64 screen codes for display.
   (On Windows, the file extension must be changed to `.txt`.)
 - Optional line endings: LF or CRLF.
 - Text buffer at `$4000–$CEFF` (approximately 36 KB); BASIC ROM is switched off.
-- RAM consumption approx. 5 kB.
 - The uppercase/lowercase character set is copied to RAM at `$3000`.
+- Application memory usage: approx. 5 kB.
 - All keyboard input is converted to ASCII.  
 - Characters that cannot be entered directly via the keyboard can be entered manually using F8.  
-- German UTF-8 umlauts are displayed as inverted characters, no conversion in the text.  
+- German UTF-8 umlauts are displayed as inverted ASCII characters; no conversion is performed in the file.  
    
 ### ANSI X3.4-1986 characters  
 ```
