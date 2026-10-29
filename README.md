@@ -71,6 +71,8 @@ pqrstuvwxyz {|}~
   
 Start the program from floppy disk using `LOAD"TEXTEDITOR",8,1` and `RUN`.
   
+<br>
+<br>  
      
 > [!Important]
 >**AI Notice:**  
