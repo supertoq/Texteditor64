@@ -50,6 +50,7 @@ pqrstuvwxyz {|}~
         | (key before RESTORE)       = ASCII character pipe (|)         
         SHIFT+| (key before RESTORE) = ^  
         SHIFT+: = [          SHIFT+; = ]  
+  
     F8 = Allows any ASCII code to be inserted (decimal values)  
          33 – 126 = ASCII text characters    
          0 – 32 = control characters, 127 = DEL  
