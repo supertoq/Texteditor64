@@ -61,7 +61,7 @@ pqrstuvwxyz {|}~
   
          Umlauts as Unicode input:  
          228 = ä  246 = ö  252 = ü  
-         196 = Ä  214 = Ü  220 = Ü  223 = ß  
+         196 = Ä  214 = Ö  220 = Ü  223 = ß  
   
     Alternative character representation:  
         { } = displayed as inverted parentheses ()  
