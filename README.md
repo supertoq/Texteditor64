@@ -40,13 +40,13 @@ pqrstuvwxyz {|}~
     Cursor keys  =  Move cursor       HOME    =   Start of line  
     DEL          =  Backspace         CLR     =   Start of text  
     SHIFT+DEL    =  Delete (INST)     F2      =   End of text  
-    RETURN       =  New line          F4 / F6 =  Page up / down  
+    RETURN       =  New line          F4 / F6 =   Page up / down  
     CTRL+I       =  Tabulator
   
     Direct character input on the C64 keyboard:  
         Pound key          = Backslash \  
         SHIFT+-            = Underscope _ 
-        Left-arrow key     = Underscore _  
+        Left Arrow key     = Underscore _  
         | (Up Arrow)       = ASCII character Pipe (|)         
         SHIFT+| (Up Arrow) = Caret ^  
         SHIFT+:            = Square Bracket [  
@@ -72,8 +72,9 @@ pqrstuvwxyz {|}~
 Start the program from floppy disk using `LOAD"TEXTEDITOR",8,1` and `RUN`.
   
      
-### $\color{#8B0000}{\mathsf{\textbf{AI alert:}}}$
-- The code was created with the assistance of Claude.  
+> [!Important]
+>**AI Notice:**  
+>The code was created with the assistance of Claude.  
    
 ### Useful Information
 PETSCII-Codes
