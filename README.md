@@ -10,7 +10,7 @@ A text editor capable of loading, editing, and saving ASCII text.
 
 You can open and edit text files that you’ve transferred to the C64 from Windows or Linux. After editing them on the C64, you can process the text file on your PC again—it remains compatible.  
 The editor supports the 7-bit ASCII character set (ANSI X3.4-1986), with the exception of the NUL and CR characters, which are deliberately ignored when loading a file.  
-Special characters are converted to suitable C64 screen codes for display.  
+Special characters are mapped to suitable C64 screen codes for display.  
   
 ### Features
   
@@ -44,12 +44,13 @@ pqrstuvwxyz {|}~
     CTRL+I       =  Tabulator
   
     Direct character input on the C64 keyboard:  
-        Pound key                    = Backslash \  
-        SHIFT+-                      = Underscope _ 
-        Left-arrow key               = Underscore _  
-        | (key before RESTORE)       = ASCII character pipe (|)         
-        SHIFT+| (key before RESTORE) = ^  
-        SHIFT+: = [          SHIFT+; = ]  
+        Pound key          = Backslash \  
+        SHIFT+-            = Underscope _ 
+        Left-arrow key     = Underscore _  
+        | (Up Arrow)       = ASCII character Pipe (|)         
+        SHIFT+| (Up Arrow) = Caret ^  
+        SHIFT+:            = Square Bracket [  
+        SHIFT+;            = Square Bracket ]  
   
     F8 = Allows any ASCII code to be inserted (decimal values)  
          33 – 126 = ASCII text characters    
@@ -63,15 +64,15 @@ pqrstuvwxyz {|}~
          228 = ä  246 = ö  252 = ü  
          196 = Ä  214 = Ö  220 = Ü  223 = ß  
   
-    Alternative character representation:  
-        { } = displayed as inverted parentheses ()  
-         ~  = displayed as an inverted minus sign -  
+    Special Character Mapping:  
+        { } = displayed as inverted Parentheses ()  
+         ~  = displayed as an inverted Minus Sign -  
          german UTF-8 umlauts = displayed as inverted ASCII character  
   
 Start the program from floppy disk using `LOAD"TEXTEDITOR",8,1` and `RUN`.
   
      
-### $\color{#8B0000}{\textbf{AI alert:}}$  
+### <span style="color:#8B0000">**AI alert:**</span> 
 - The code was created with the assistance of Claude.  
    
 ### Useful Information
