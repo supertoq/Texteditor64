@@ -18,13 +18,13 @@ Special characters are converted to suitable C64 screen codes for display.
   (On Windows, the file extension must be changed to `.txt`.)
 - Optional line endings: LF or CRLF.
 - Text buffer at `$4000–$CEFF` (approximately 36 KB); BASIC ROM is switched off.
+- RAM consumption approx. 5 kB.
 - The uppercase/lowercase character set is copied to RAM at `$3000`.
-- All keyboard input is converted to ASCII.
+- All keyboard input is converted to ASCII.  
 - Characters that cannot be entered directly via the keyboard can be entered manually using F8.  
-- Codes above 127: They are not part of ASCII. Input is possible, but display is not.
-- Umlauts in PC files are displayed as an inverted full stop.  
+- German UTF-8 umlauts are displayed as inverted characters, no conversion in the text.  
    
-### ANSI X3.4-1986 characters
+### ANSI X3.4-1986 characters  
 ```
 !"#$%&'()*+,-./ 
 0123456789:;<=>? @  
@@ -34,8 +34,8 @@ abcdefghijklmno
 pqrstuvwxyz {|}~   
 ```  
   
-### Keyboard controls:
-    F1  Save   F3  Load   F5  New   F7  Quit  
+### Keyboard controls:  
+    F1 = Save   F3 = Load   F5 = New   F7 = Quit  
       
     Cursor keys  =  Move cursor       HOME    =   Start of line  
     DEL          =  Backspace         CLR     =   Start of text  
@@ -45,22 +45,29 @@ pqrstuvwxyz {|}~
   
     Direct character input on the C64 keyboard:  
         Pound key                    = Backslash \  
-        Left-arrow key               = Underscore _  (also SHIFT+Pound)  
+        SHIFT+-                      = Underscope _ 
+        Left-arrow key               = Underscore _  
         | (key before RESTORE)       = ASCII character pipe (|)         
         SHIFT+| (key before RESTORE) = ^  
         SHIFT+: = [          SHIFT+; = ]  
- 
-    F8  Allows any ASCII code to be inserted (decimal values 1–127, extended up to 255)  
+    F8 = Allows any ASCII code to be inserted (decimal values)  
+         33 – 126 = ASCII text characters    
+         0 – 32 = control characters, 127 = DEL  
+         (Inputs of 0 and 13 are ignored)  
   
-        Examples of decimal values:  
-        126 = ~   123 = {   125 = }   96 = `   92 = \  
-        9 = Tab   12 = Form feed (PC: CTRL+L)   27 = ESC   127 = DEL  
+         Examples of decimal values:  
+         126 = ~  125 = }  123 = {  96 = `  9 = Tab   
+  
+         Umlauts as Unicode input:  
+         228 = ä  246 = ö  252 = ü  
+         196 = Ä  214 = Ü  220 = Ü  223 = ß  
   
     Alternative character representation:  
         { } = displayed as inverted parentheses ()  
          ~  = displayed as an inverted minus sign -  
+         german UTF-8 umlauts = displayed as inverted ASCII character  
   
-Start the program from floppy disk using LOAD"TEXTEDITOR",8,1 and RUN.
+Start the program from floppy disk using `LOAD"TEXTEDITOR",8,1` and `RUN`.
   
      
 ### $\color{#8B0000}{\textbf{AI alert:}}$  
