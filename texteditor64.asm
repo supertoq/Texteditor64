@@ -1,20 +1,22 @@
 ; =====================================================================
 ;  ASCII-Texteditor fuer den C64 
 ;  Copyright (c) 2026 supertoq
-;  Version 1.0_a
+;  Version 1.0 e
 ;  
 ;  Ein Texteditor der in der Lage ist ASCII Code zu laden, zu editieren und zu speichern.
 ;  Unterstuetzt wird der 7-Bit-ASCII-Zeichensatz (ANSI X3.4-1986),
 ;  ausgenommen der Zeichen NUL und CR, diese werden beim Laden einer Datei bewusst ignoriert.
-;  Sonderzeichen werden fuer die Darstellung auf dem C64 in passende Bildschirmcodes umgewandelt.
-;
+;  ANSI Sonderzeichen werden fuer die Darstellung auf dem C64 in passende Bildschirmcodes umgewandelt.
+;  
 ;  - Dateien werden als C64 SEQ-Dateien mit reinem ASCII gespeichert 
 ;    (in Windows muss die Dateiendung in .txt umbenannt werden)
 ;  - Zeilenende LF oder CRLF optional umstellbar
 ;  - Textspeicher $4000-$CEFF (ca. 36 KB), BASIC-ROM wird abgeschaltet
+;  - Programmspeicherverbrauch 5 kB
 ;  - Zeichensatz Gross/Klein wird in den RAM $3000 kopiert
 ;  - Jede Eingabe wird nach ASCII umgewandelt
 ;  - nicht verfuegbare Tasteneingaben koennen per F8 haendisch eingetragen werden
+;  - Deutsche UTF-8 Umlaute werden als invertierter Buchstabe angezeigt, keine Umwandlung im Text
 ;
 ;  Tastenverwendung:
 ;    F1 = Speichern  F3 = Laden  F5 = Neu  F7 = Beenden  F8 = ASCII Code Eingabe
@@ -26,22 +28,30 @@
 ;    CTRL+I      =  Tabulator
 ;
 ;  Zeichen-Direkteingabe auf der C64-Tastatur: 
-;        Pfund-Taste                 =  Backslash \
-;        Linkspfeil-Taste            =  Unterstrich _  (ebenso SHIFT+Pfund)
-;        | (Taste vor RESTORE)       =  ASCII Pipe | 
-;        SHIFT+| (Taste vor RESTORE) =  ^   
-;        SHIFT+:  =  [      SHIFT+;  =  ]
+;        Pfund-Taste             =  Backslash \
+;        SHIFT + -               =  Underscore _
+;        Linkspfeil-Taste        =  Underscore _
+;        | (Taste vor RESTORE)   =  ASCII Pipe | 
+;        SHIFT + | (vor RESTORE) =  Caret ^   
+;        SHIFT + :               =  Square Bracket [  
+;        SHIFT + ;               =  Square Bracket ]
 ;
-;    F8  =  ASCII-Code Eingabe (Dezimalwerte 1-127, + erweitert bis 255)
-;    
-;        Beispiele für Dezimalwerte:
-;        126 = ~   123 = {   125 = }   96 = `   92 = \ 
-;        9 = Tab   12 = Seitenumbruch(PC: CTRL+L)   27 = ESC   127 = DEL
+;        F8  =  Zeicheneingabe per ASCII Code (Dezimal)
+;               33 - 126 = ASCII Zeichencodes
+;               Beachte, Codes 0 - 32 = Steuerzeichen, 127 = DEL 
+;               (Die Eingaben von 0 und 13 werden ignoriert)
+;               
+;               Beispiele fuer Dezimalwerte:
+;               126 = ~  125 = }  123 = {  96 = `  9 = Tab 
 ;
+;               Umlaute als Unicode-Eingabe:
+;               228 = ae  246 = oe  252 = ue  
+;               196 = AE  214 = OE  220 = UE  223 = Sz 
+;                             
 ;  Alternative Zeichendarstellung:
 ;        { } = dargestellt als invertierte Klammern ()
 ;         ~  = dargestellt als invertiertes Minus -
-;
+;        UTF-8 Umlaute = dargestellt als invertiertes ASCII Zeichen      
 ;
 ;  Editor starten - von Diskette per LOAD"TEXTEDITOR",8 und RUN
 ;
@@ -59,13 +69,13 @@ CRLF    = 1                     ; Zeilenende: 0 = LF, 1 = CR+LF
 ; ---- Speicheraufteilung
 BUF     = $4000                 ; Textspeicher: Anfang
 BUFEND  = $cf00                 ; Textspeicher: Ende
-SCREEN  = $0400
+SCREEN  = $0400                 ; Anfangsadresse des Bildschirmspeichers
 TROWS   = 23                    ; Textzeilen auf dem Bildschirm
-STAT    = SCREEN+23*40          ; Statuszeile (Hilfe/Meldungen)
-INFO    = SCREEN+24*40          ; Infozeile (freier Speicher)
-WARN    = 1000                  ; darunter wird die Anzeige rot
+STAT    = SCREEN+23*40          ; Position Statuszeile (Hilfe/Meldungen)
+INFO    = SCREEN+24*40          ; Position Infozeile (freier Speicher)
+WARN    = 1000                  ; Wert darunter in rot
 WARNCOL = 10                    ; Warnfarbe (hellrot)
-LF      = $0a
+LF      = $0a                   ; Zahl Zehn ($0a) fuer LF
 TAB     = $09                   ; Tabulator-Zeichen (Code 9)
 TABW    = 4                     ; Breite des Tabulators am Bildschirm
 TEXTCOL = 15                    ; Textfarbe (hellgrau)
@@ -104,7 +114,7 @@ CLALL   = $ffe7
 ;    sz     Anzahl Bytes, die beim Verschieben von Text betroffen sind
 ;    crow   Zeile des Cursors am Bildschirm
 ;    ccol   Spalte des Cursors am Bildschirm
-;    tmp, tmp2, tmp3  Hilfsvariablen
+;    tmp, tmp2, tcnt, mcol, u8sx  Hilfsvariablen
 ;    LF     Zeilenvorschub, das Zeilenende-Zeichen (Code 10)
 ; ---------------------------------------------------------------------
 
@@ -290,8 +300,8 @@ p2a     cmp #TAB
         beq p2a_pi              ; Pfeil hoch -> |
         cmp #$60
         bcc p2a_ok              ; $5B-$5F  [ \ ] _
-        cmp #$a9
-        beq p2a_us              ; SHIFT+Pfund-Taste -> _
+        cmp #$dd
+        beq p2a_us              ; SHIFT+Minus-Taste -> _
         cmp #$de
         beq p2a_ca              ; SHIFT+Pfeil hoch -> ^
         cmp #$c1
@@ -360,6 +370,30 @@ a2s_3   cmp #$7b
         rts
 a2s_np  lda #$ae                ; nicht darstellbar: invertierter Punkt
 a2s_rt  rts
+
+; Zweites Byte eines UTF-8 Umlauts pruefen (nach dem Anfangsbyte 195)
+; Das Byte kommt im Register A an.
+; Carry geloescht: gueltig, A = Bildschirmcode des Umlauts
+; Carry gesetzt: kein Umlaut
+; Die Register X und Y bleiben unveraendert
+u8map   stx u8sx
+        ldx #6
+um1     cmp u8tab,x
+        beq um2
+        dex
+        bpl um1
+        ldx u8sx
+        sec
+        rts
+um2     lda u8gly,x
+        ldx u8sx
+        clc
+        rts
+
+; Zweite Bytes:   a-Uml. o-Uml. u-Uml. A-Uml. O-Uml. U-Uml. scharfes s
+u8tab   .byte     $a4,   $b6,   $bc,   $84,   $96,   $9c,   $9f
+; Bildschirmcodes (invertierte Buchstaben a o u A O U B)
+u8gly   .byte     $81,   $8f,   $95,   $c1,   $cf,   $d5,   $c2
 
 ; ---------------------------------------------------------------------
 ;  Text aendern
@@ -511,12 +545,24 @@ k_bs    lda cur+1               ; Backspace
         lda cur
         cmp #<BUF
         beq kb_rt
-+       #dec16 cur
-        jmp delchar
++       jsr k_left              ; ein Zeichen zurueck (auch ganzer Umlaut)
+        jmp k_del               ; und dieses Zeichen loeschen
 kb_rt   rts
 
-k_del   jmp delchar
+; Zeichen unter dem Cursor loeschen
+; ein UTF-8 Umlaut wird komplett geloescht (beide Bytes)
+k_del   ldy #0
+        lda (cur),y
+        cmp #$c3
+        bne kx_one
+        iny
+        lda (cur),y
+        jsr u8map
+        bcs kx_one
+        jsr delchar             ; erstes Byte
+kx_one  jmp delchar             ; (zweites) Byte
 
+; Cursor ein Zeichen nach links (UTF-8 Umlaut = ein Zeichen)
 k_left  lda cur+1
         cmp #>BUF
         bne +
@@ -524,11 +570,34 @@ k_left  lda cur+1
         cmp #<BUF
         beq kl_rt
 +       #dec16 cur
+        ldy #0
+        lda (cur),y
+        jsr u8map               ; ist es ein zweites Umlaut-Byte?
+        bcs kl_rt
+        lda cur+1               ; steht davor noch ein Byte?
+        cmp #>BUF
+        bne kl_chk
+        lda cur
+        cmp #<BUF
+        beq kl_rt
+kl_chk  #dec16 cur
+        ldy #0
+        lda (cur),y
+        cmp #$c3                ; davor das Anfangsbyte: Cursor bleibt dort
+        beq kl_rt
+        #inc16 cur              ; sonst doch nur ein Byte zurueck
 kl_rt   rts
 
-k_right ldx #0
-        lda (cur,x)
+; Cursor ein Zeichen nach rechts (UTF-8 Umlaut = ein Zeichen)
+k_right ldy #0
+        lda (cur),y
         beq kr_rt
+        #inc16 cur
+        cmp #$c3
+        bne kr_rt
+        lda (cur),y             ; folgt ein zweites Umlaut-Byte?
+        jsr u8map
+        bcs kr_rt
         #inc16 cur
 kr_rt   rts
 
@@ -590,27 +659,38 @@ ku_rt   rts
 
 ; Cursor in der Zeile ab p auf die Spalte tmp setzen
 ; (oder davor, wenn die Zeile kuerzer ist)
-; Ein Tabulator wird nicht in der Mitte getroffen
-movecol ldx #0
-        ldy #0                  ; Y = bisherige Spalte
-mc_lp   lda (p,x)
+; Ein Tabulator oder UTF-8 Umlaut wird nicht in der Mitte getroffen
+movecol lda #0
+        sta mcol                ; mcol = bisherige Spalte
+mc_lp   ldy #0
+        lda (p),y
         beq mc_dn
         cmp #LF
         beq mc_dn
+        ldx #1                  ; X = Laenge des Zeichens in Bytes
         cmp #TAB
         beq mc_tab
-        tya
+        cmp #$c3                ; Anfang eines UTF-8 Umlauts?
+        bne mc_1
+        iny
+        lda (p),y
+        jsr u8map
+        bcs mc_1
+        ldx #2                  ; Umlaut: zwei Bytes
+mc_1    lda mcol
         clc
-        adc #1                  ; normales Zeichen: 1 Spalte
+        adc #1                  ; ein Zeichen: 1 Spalte
         jmp mc_chk
-mc_tab  tya
+mc_tab  lda mcol
         clc
         adc #TABW               ; Tabulator: TABW Spalten
 mc_chk  cmp tmp
         beq mc_adv
         bcs mc_dn               ; ueber der gewuenschten Spalte: stop
-mc_adv  tay
-        #inc16 p
+mc_adv  sta mcol
+mc_inc  #inc16 p
+        dex
+        bne mc_inc
         jmp mc_lp
 mc_dn   lda p
         sta cur
@@ -626,21 +706,28 @@ calccol lda r
         sta q+1
         ldx #0
         ldy #0                  ; Y = Spalte
-cc_lp   lda q
-        cmp cur
-        bne cc_c
-        lda q+1
+cc_lp   lda q+1                 ; fertig, wenn q den Cursor erreicht hat
         cmp cur+1
-        beq cc_dn               ; Cursor erreicht
+        bcc cc_c
+        bne cc_dn
+        lda q
+        cmp cur
+        bcs cc_dn
 cc_c    lda (q,x)
         #inc16 q
         cmp #TAB
-        bne cc_1
+        bne cc_n
         tya
         clc
         adc #TABW               ; Tabulator: TABW Spalten
         tay
         jmp cc_lp
+cc_n    cmp #$c3                ; Anfang eines UTF-8 Umlauts?
+        bne cc_1
+        lda (q,x)
+        jsr u8map
+        bcs cc_1
+        #inc16 q                ; zweites Byte gehoert zum Zeichen
 cc_1    iny
         jmp cc_lp
 cc_dn   sty ccol
@@ -652,7 +739,7 @@ cc_dn   sty ccol
 ; Naechste Bildschirmzeile suchen
 ; p zeigt vorher auf den Anfang einer Zeile
 ; und danach auf den Anfang der naechsten Zeile
-; Ein Tabulator zaehlt TABW Spalten
+; Ein Tabulator zaehlt TABW Spalten, ein UTF-8 Umlaut eine Spalte
 ; Carry gesetzt: Textende erreicht (letzte Zeile)
 nextrow ldx #0
         ldy #0                  ; Y = Spalte in der Zeile
@@ -662,13 +749,19 @@ nr1     lda (p,x)
         cmp #LF
         beq nr_t
         cmp #TAB
+        beq nr_tb
+        cmp #$c3                ; Anfang eines UTF-8 Umlauts?
         bne nr_c
-        tya                     ; Tabulator: TABW Spalten weiter
+        lda (p,x)
+        jsr u8map
+        bcs nr_c                ; nein, einzelnes Byte
+        #inc16 p                ; zweites Byte gehoert zum Zeichen
+nr_c    iny                     ; normales Zeichen: 1 Spalte weiter
+        jmp nr_chk
+nr_tb   tya                     ; Tabulator: TABW Spalten weiter
         clc
         adc #TABW
         tay
-        jmp nr_chk
-nr_c    iny                     ; normales Zeichen: 1 Spalte weiter
 nr_chk  cpy #40
         bcc nr1                 ; Zeile noch nicht voll
 nr_t    clc
@@ -830,8 +923,16 @@ dr_ch   lda (p,x)
         beq dr_fill
         cmp #TAB
         beq dr_tab
-        jsr a2s
-        sta (sc),y
+        cmp #$c3                ; Anfang eines UTF-8 Umlauts?
+        bne dr_a2s
+        lda (p,x)
+        jsr u8map               ; Bildschirmcode des Umlauts holen
+        bcs dr_lone
+        #inc16 p                ; zweites Byte gehoert zum Zeichen
+        jmp dr_put
+dr_lone lda #$c3                ; einzelnes Byte: normale Darstellung
+dr_a2s  jsr a2s
+dr_put  sta (sc),y
         iny
         cpy #40
         bne dr_ch
@@ -1010,7 +1111,6 @@ k_quit  jsr stclear
 k_code  jsr stclear
         #msg m_code
         lda #0
-        sta tmp                 ; Zahlenwert
         sta tmp2                ; Anzahl Ziffern
 kc_lp   jsr getkey
         cmp #$0d
@@ -1023,26 +1123,11 @@ kc_lp   jsr getkey
         bcc kc_lp
         cmp #'9'+1
         bcs kc_lp
-        sec
-        sbc #'0'
-        sta digit
-        lda tmp
-        cmp #26
-        bcs kc_lp               ; Wert wuerde ueber 255 gehen
-        asl
-        sta tmp3                ; Wert x 2
-        asl
-        asl                     ; Wert x 8
-        clc
-        adc tmp3                ; Wert x 10
-        clc
-        adc digit
-        bcs kc_lp
-        sta tmp
+        ldx tmp2
+        cpx #5
+        bcs kc_lp               ; mehr als 5 Ziffern gibt es nicht
+        sta dbuf,x
         inc tmp2
-        lda digit
-        clc
-        adc #'0'
         jsr stputc
         jmp kc_lp
 kc_bs   lda tmp2                ; keine Ziffer vorhanden
@@ -1052,29 +1137,164 @@ kc_bs   lda tmp2                ; keine Ziffer vorhanden
         ldx stcol
         lda #$a0
         sta STAT,x
-        lda tmp                 ; Wert durch 10 teilen
-        ldx #0
--       sec
-        sbc #10
-        bcc +
-        inx
-        bne -
-+       stx tmp
         jmp kc_lp
+kc_no   rts
+
+; RETURN: aus den Ziffern den Wert (16 Bit) berechnen
 kc_done lda tmp2
         beq kc_no
-        lda tmp
-        beq kc_no
-        jmp insert
-kc_no   rts
+        lda #0
+        sta uval
+        sta uval+1
+        tax
+kd_lp   asl uval                ; Wert x 10
+        rol uval+1
+        bcs kc_no
+        lda uval
+        sta u2
+        lda uval+1
+        sta u2+1                ; u2 = Wert x 2
+        asl uval
+        rol uval+1
+        bcs kc_no
+        asl uval
+        rol uval+1
+        bcs kc_no
+        clc                     ; x8 + x2
+        lda uval
+        adc u2
+        sta uval
+        lda uval+1
+        adc u2+1
+        sta uval+1
+        bcs kc_no
+        lda dbuf,x              ; plus die Ziffer
+        sec
+        sbc #'0'
+        clc
+        adc uval
+        sta uval
+        bcc +
+        inc uval+1
+        beq kc_no               ; Ueberlauf ueber 65535
++       inx
+        cpx tmp2
+        beq +
+        jmp kd_lp
++
+; Wert in UTF-8 Bytes umwandeln (ubuf, ulen)
+        lda uval+1
+        bne kc_ge256
+        lda uval
+        beq kc_no               ; 0 gibt es nicht
+        cmp #$0d
+        beq kc_no               ; CR wird beim Laden ignoriert
+        cmp #128
+        bcs kc_two
+        sta ubuf                ; bis 127: ein Byte (ASCII)
+        lda #1
+        sta ulen
+        bne kc_put
+kc_ge256 cmp #$08
+        bcc kc_two              ; bis 2047: zwei Bytes
+        cmp #$d8
+        bcc kc_three
+        cmp #$e0
+        bcs kc_three
+        rts                     ; $D800-$DFFF sind kein Zeichen
+kc_three
+        lda uval+1              ; ab 2048: drei Bytes
+        lsr
+        lsr
+        lsr
+        lsr
+        ora #$e0
+        sta ubuf
+        jsr hi6                 ; mittlere 6 Bit
+        sta ubuf+1
+        lda uval
+        and #$3f
+        ora #$80
+        sta ubuf+2
+        lda #3
+        sta ulen
+        bne kc_put
+kc_two  lda uval+1
+        asl
+        asl
+        sta u2
+        lda uval
+        lsr
+        lsr
+        lsr
+        lsr
+        lsr
+        lsr
+        ora u2
+        ora #$c0
+        sta ubuf
+        lda uval
+        and #$3f
+        ora #$80
+        sta ubuf+1
+        lda #2
+        sta ulen
+; Platz pruefen, dann alle Bytes einfuegen (nie nur ein Teil)
+kc_put  lda tend
+        clc
+        adc ulen
+        sta u2
+        lda tend+1
+        adc #0
+        cmp #>BUFEND
+        bcc kp_ok
+        bne kp_full
+        lda u2
+        bne kp_full
+kp_ok   ldx #0
+kp_lp   stx ucnt
+        lda ubuf,x
+        jsr insert
+        ldx ucnt
+        inx
+        cpx ulen
+        bne kp_lp
+        rts
+kp_full jsr stclear
+        #msg m_full
+        lda #1
+        sta statshow
+        rts
+
+; Bits 6-11 des Wertes uval als UTF-8 Folgebyte ($80-$BF) in A
+hi6     lda uval+1
+        asl
+        asl
+        sta u2
+        lda uval
+        lsr
+        lsr
+        lsr
+        lsr
+        lsr
+        lsr
+        ora u2
+        and #$3f
+        ora #$80
+        rts
 
 ; ---------------------------------------------------------------------
 ;  Dateien
 ; ---------------------------------------------------------------------
 ; Dateinamen abfragen (bleibt gespeichert)
+; gnp = Adresse des Hinweistexts (Save file: / Load file:)
 ; Carry-Bit gesetzt: abgebrochen
 getname jsr stclear
-        #msg m_name
+        lda gnp                 ; Hinweistext ausgeben
+        sta p
+        lda gnp+1
+        sta p+1
+        jsr stprint
         ldy #0
 -       cpy flen
         beq +
@@ -1221,7 +1441,11 @@ dev_err jsr CLALL
         sta statshow
         rts
 
-k_save  jsr getname
+k_save  lda #<m_sname
+        sta gnp
+        lda #>m_sname
+        sta gnp+1
+        jsr getname
         bcc +
         rts
 +       jsr setscratch          ; alte Datei gleichen Namens loeschen
@@ -1273,7 +1497,11 @@ sv_end  jsr CLRCHN
         jsr stclear
         jmp showdrv
 
-k_load  jsr getname
+k_load  lda #<m_lname
+        sta gnp
+        lda #>m_lname
+        sta gnp+1
+        jsr getname
         bcc +
         rts
 +       lda #0
@@ -1340,11 +1568,12 @@ ld_err  jsr closeall
 ; ---------------------------------------------------------------------
 m_help  .null "F1 Save  F3 Load  F5 New  F8 ASCII Code"
 m_pg    .null "F4 PgUp  F6 PgDn  F7 Exit  "
-m_free  .null " Free: "
-m_name  .null " File: "
+m_free  .null " Free:"
+m_sname .null " Save file: "
+m_lname .null " Load file: "
 m_new   .null " Clear text? (Y/N)"
 m_quit  .null " Exit editor? (Y/N)"
-m_code  .null " ASCII code 1-255, RETURN: "
+m_code  .null " Text code (e.g. 33-126): "
 m_full  .null " Memory full!"
 m_loaded .null " READY."
 m_big   .null " File too big - truncated!"
@@ -1360,11 +1589,18 @@ cnt     .byte 0
 cnt2    .byte 0
 tmp     .byte 0
 tmp2    .byte 0
-tmp3    .byte 0
-digit   .byte 0
 chr     .byte 0
 toobig  .byte 0
 tcnt    .byte 0
+mcol    .byte 0
+gnp     .word 0
+dbuf    .fill 5,0
+uval    .word 0
+u2      .word 0
+ubuf    .fill 3,0
+ulen    .byte 0
+ucnt    .byte 0
+u8sx    .byte 0
 flen    .byte 0
 freel   .byte 0
 freeh   .byte 0
