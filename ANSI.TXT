@@ -11,11 +11,11 @@ pqrstuvwxyz {|}~
 ____________________
 
 
-
 Example decimal codes for keys
 not on the C64 keyboard:
 
-126 = Tilde ~  
-123 = Curly brace {
-125 = Curly brace }
- 96 = Backtick `
+126     =       Tilde ~  
+123     =       Curly brace {
+125     =       Curly brace }
+ 96     =       Backtick `
+ 
