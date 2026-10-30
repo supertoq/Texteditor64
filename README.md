@@ -1,6 +1,6 @@
 <img src="assets/6502_0.svg" height="96">
 
-# C64 ASCII Text Editor 
+# C64 ASCII Text Editor V2
 A text editor capable of loading, editing, and saving ASCII text.  
   
 <p>
@@ -19,10 +19,11 @@ Special characters are mapped to suitable C64 screen codes for display.
 - Optional line endings: LF or CRLF.
 - Text buffer at `$4000–$CEFF` (approximately 36 KB); BASIC ROM is switched off.
 - The uppercase/lowercase character set is copied to RAM at `$3000`.
-- Application memory usage: approx. 6 kB.
+- Application memory usage: approx. 7 KB.
 - All keyboard input is converted to ASCII.  
 - Characters that cannot be entered directly via the keyboard can be entered manually using F8.  
 - German UTF-8 umlauts are displayed as inverted ASCII characters; no conversion is performed in the file.  
+- Drives 8–11 can be selected; disks are checked for space before saving. 
    
 ### ANSI X3.4-1986 characters  
 ```
@@ -35,7 +36,7 @@ pqrstuvwxyz {|}~
 ```  
   
 ### Keyboard controls:  
-    F1 = Save   F3 = Load   F5 = New   F7 = Quit  
+    F1 = Save   F3 = Load   F5 = New   F8 = Code input   F7 = Quit  
       
     Cursor keys  =  Move cursor       HOME    =   Start of line  
     DEL          =  Backspace         CLR     =   Start of text  
@@ -54,9 +55,9 @@ pqrstuvwxyz {|}~
         SHIFT+:            = Square Bracket [  
         SHIFT+;            = Square Bracket ]  
   
-    F8 = Allows any ASCII code to be inserted (decimal values)  
-         33 – 126 = ASCII text characters    
-         0 – 32 = control characters, 127 = DEL  
+    F8 = Enter any ASCII code (decimal) 
+         33–126 = printable ASCII characters   
+         0–31 = control characters, 32 = SPACE, 127 = DEL
          (Inputs of 0 and 13 are ignored)  
   
          Examples of decimal values:  
@@ -70,6 +71,8 @@ pqrstuvwxyz {|}~
         { } = displayed as inverted Parentheses ()  
          ~  = displayed as an inverted Minus Sign -  
          german UTF-8 umlauts = displayed as inverted ASCII character  
+         UTF-8 Chevrons « » = displayed as inverted < >   
+         
   
 Start the program from floppy disk using `LOAD"TEXTEDITOR",8,1` and `RUN`.
   
