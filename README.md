@@ -19,7 +19,7 @@ Special characters are mapped to suitable C64 screen codes for display.
 - Optional line endings: LF or CRLF.
 - Text buffer at `$4000–$CEFF` (approximately 36 KB); BASIC ROM is switched off.
 - The uppercase/lowercase character set is copied to RAM at `$3000`.
-- Application memory usage: approx. 5 kB.
+- Application memory usage: approx. 6 kB.
 - All keyboard input is converted to ASCII.  
 - Characters that cannot be entered directly via the keyboard can be entered manually using F8.  
 - German UTF-8 umlauts are displayed as inverted ASCII characters; no conversion is performed in the file.  
@@ -44,9 +44,11 @@ pqrstuvwxyz {|}~
     CTRL+I       =  Tabulator
   
     Direct character input on the C64 keyboard:  
-        Pound key          = Backslash \  
-        SHIFT+-            = Underscope _ 
-        Left Arrow key     = Underscore _  
+        Pound              = Backslash \  
+        SHIFT+Pound        = Underscope _ 
+        Left Arrow         = Backtick `
+        SHIFT+Plus         = Curly Brace {
+        SHIFT+Minus        = Curly Brace }
         | (Up Arrow)       = ASCII character Pipe (|)         
         SHIFT+| (Up Arrow) = Caret ^  
         SHIFT+:            = Square Bracket [  
