@@ -1,7 +1,7 @@
 ; =====================================================================
 ;  ASCII-Texteditor fuer den C64 
 ;  Copyright (c) 2026 supertoq
-;  Version 1.0 e
+;  Version 1.0_d
 ;  
 ;  Ein Texteditor der in der Lage ist ASCII Code zu laden, zu editieren und zu speichern.
 ;  Unterstuetzt wird der 7-Bit-ASCII-Zeichensatz (ANSI X3.4-1986),
@@ -28,13 +28,15 @@
 ;    CTRL+I      =  Tabulator
 ;
 ;  Zeichen-Direkteingabe auf der C64-Tastatur: 
-;        Pfund-Taste             =  Backslash \
-;        SHIFT + -               =  Underscore _
-;        Linkspfeil-Taste        =  Underscore _
-;        | (Taste vor RESTORE)   =  ASCII Pipe | 
-;        SHIFT + | (vor RESTORE) =  Caret ^   
-;        SHIFT + :               =  Square Bracket [  
-;        SHIFT + ;               =  Square Bracket ]
+;        Pfund-Taste                 =  Backslash \
+;        SHIFT+Pfund                 =  Unterstrich _
+;        Linkspfeil-Taste            =  Backtick `
+;        SHIFT+Plus                  =  Curly Brace {
+;        SHIFT+Minus                 =  Curly Brace }
+;        | (Taste vor RESTORE)       =  ASCII Pipe | 
+;        SHIFT+| (Taste vor RESTORE) =  Caret ^   
+;        SHIFT+:                     =  Square Bracket [  
+;        SHIFT+;                     =  Square Bracket ]
 ;
 ;        F8  =  Zeicheneingabe per ASCII Code (Dezimal)
 ;               33 - 126 = ASCII Zeichencodes
@@ -51,7 +53,7 @@
 ;  Alternative Zeichendarstellung:
 ;        { } = dargestellt als invertierte Klammern ()
 ;         ~  = dargestellt als invertiertes Minus -
-;        UTF-8 Umlaute = dargestellt als invertiertes ASCII Zeichen      
+;        UTF-8 Umlaute = dargestellt als invertiertes Zeichen      
 ;
 ;  Editor starten - von Diskette per LOAD"TEXTEDITOR",8 und RUN
 ;
@@ -64,7 +66,7 @@
         .cdef $00, $ff, $00
 
 ; Option:
-CRLF    = 1                     ; Zeilenende: 0 = LF, 1 = CR+LF
+CRLF    = 0                     ; Zeilenende: 0 = LF, 1 = CR+LF
 
 ; ---- Speicheraufteilung
 BUF     = $4000                 ; Textspeicher: Anfang
@@ -298,10 +300,16 @@ p2a     cmp #TAB
         bcc p2a_lo              ; $41-$5A = Kleinbuchstaben
         cmp #$5e
         beq p2a_pi              ; Pfeil hoch -> |
+        cmp #$5f
+        beq p2a_bt              ; Pfeil links -> `
         cmp #$60
-        bcc p2a_ok              ; $5B-$5F  [ \ ] _
+        bcc p2a_ok              ; $5B-$5D  [ \ ]
+        cmp #$a9
+        beq p2a_us              ; SHIFT+Pfund-Taste -> _
+        cmp #$db
+        beq p2a_lb              ; SHIFT+Plus-Taste -> {
         cmp #$dd
-        beq p2a_us              ; SHIFT+Minus-Taste -> _
+        beq p2a_rb              ; SHIFT+Minus-Taste -> }
         cmp #$de
         beq p2a_ca              ; SHIFT+Pfeil hoch -> ^
         cmp #$c1
@@ -320,6 +328,12 @@ p2a_pi  lda #$7c                ; |
 p2a_us  lda #$5f                ; _
         rts
 p2a_ca  lda #$5e                ; ^
+        rts
+p2a_bt  lda #$60                ; `
+        rts
+p2a_lb  lda #$7b                ; {
+        rts
+p2a_rb  lda #$7d                ; }
         rts
 
 ; ASCII-Zeichen in Bildschirmcode umwandeln
